@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
 import { configuration } from './config';
+import { ChoicesModule } from './choices/choices.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { configuration } from './config';
     UsersModule,
     AuthModule,
     SettingsModule,
+    ChoicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

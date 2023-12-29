@@ -22,7 +22,7 @@ export class productSchema {
     default: [],
   })
   @Prop()
-  choices: string[];
+  choices: Types.ObjectId[];
 
   @ApiProperty({
     type: String,
