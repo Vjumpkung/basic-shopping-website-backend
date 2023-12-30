@@ -7,9 +7,9 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  @ApiOkResponse({ description: 'hello world!', type: String })
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('/ping')
+  @ApiOkResponse({ description: 'Pong!', type: String })
+  getPing(): string {
+    return this.appService.pong();
   }
 }
