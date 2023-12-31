@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
   Param,
@@ -14,7 +13,6 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiHeaders,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiParam,

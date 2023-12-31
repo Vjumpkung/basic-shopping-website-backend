@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
   HttpCode,
   HttpStatus,
   Post,
@@ -12,7 +11,6 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
-  ApiHeaders,
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -21,12 +19,9 @@ import { AuthService } from './auth.service';
 import { RegisterResponseDto } from './dto/register.response.dto';
 import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/login.response.dto';
-import { JwtDecodePipe } from 'src/pipes/jwt.decode.pipe';
 import { ProfileResponseDto } from './dto/profile.response.dto';
 import { AuthUser } from 'src/decorators/authuser.decorator';
 import { UserJwt } from './user.jwt';
-import { Types } from 'mongoose';
-import { jwtDecode } from 'jwt-decode';
 
 @Controller('auth')
 @ApiTags('auth')
