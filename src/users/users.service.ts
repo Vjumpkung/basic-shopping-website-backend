@@ -27,6 +27,7 @@ export class UsersService {
     const user = await this.usersModel.create({
       username: userCreateDto.username,
       password: hash,
+      role: userCreateDto.role,
     });
     await user.save();
   }

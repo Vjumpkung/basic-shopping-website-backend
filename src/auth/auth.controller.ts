@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -22,6 +23,10 @@ import { LoginDto } from './dto/login.dto';
 import { LoginResponseDto } from './dto/login.response.dto';
 import { JwtDecodePipe } from 'src/pipes/jwt.decode.pipe';
 import { ProfileResponseDto } from './dto/profile.response.dto';
+import { AuthUser } from 'src/decorators/authuser.decorator';
+import { UserJwt } from './user.jwt';
+import { Types } from 'mongoose';
+import { jwtDecode } from 'jwt-decode';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -49,13 +54,13 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
-  @ApiHeaders([
-    { name: 'Authorization', description: 'Bearer token', required: false },
-  ])
   @Get('profile')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'get profile', type: ProfileResponseDto })
-  async getProfile(@Headers('Authorization') headers: string) {
-    return new JwtDecodePipe().transform(headers);
+  async getProfile(@AuthUser() me: UserJwt) {
+    if (!me) {
+      throw new UnauthorizedException();
+    }
+    return me;
   }
 }

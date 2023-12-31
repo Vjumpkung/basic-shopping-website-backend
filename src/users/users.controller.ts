@@ -28,8 +28,8 @@ import { userSchema } from 'src/schemas/users.schema';
 import { UserCreateDto } from './dto/user.create.dto';
 import { ParseMongoIdPipe } from 'src/pipes/mongo.objectid.pipe';
 import { Types } from 'mongoose';
-import { JwtDecodePipe } from 'src/pipes/jwt.decode.pipe';
 import { UserJwt } from 'src/auth/user.jwt';
+import { AuthUser } from 'src/decorators/authuser.decorator';
 
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
@@ -57,62 +57,47 @@ export class UsersController {
   @Role(UserRole.Admin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'id', type: String })
-  @ApiHeaders([
-    { name: 'Authorization', description: 'Bearer token', required: false },
-  ])
   @ApiNoContentResponse({ description: 'update user role to admin' })
   async updateUserRoleToAdmin(
-    @Headers('Authorization') headers: string,
-    @Param('id', new ParseMongoIdPipe()) id: Types.ObjectId,
+    @AuthUser() { id }: UserJwt,
+    @Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId,
   ) {
-    const headers_id = (<UserJwt>new JwtDecodePipe().transform(headers)).id;
-
-    if (id.toString() === headers_id) {
+    if (_id.toString() === id) {
       throw new BadRequestException('You cannot update your own role');
     }
 
-    await this.usersService.updateUserRoleToAdmin(id);
+    await this.usersService.updateUserRoleToAdmin(_id);
   }
 
   @Patch(':id/user')
   @Role(UserRole.Admin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'id', type: String })
-  @ApiHeaders([
-    { name: 'Authorization', description: 'Bearer token', required: false },
-  ])
   @ApiNoContentResponse({ description: 'update user role to user' })
   async updateUserRoleToUser(
-    @Headers('Authorization') headers: string,
-    @Param('id', new ParseMongoIdPipe()) id: Types.ObjectId,
+    @AuthUser() { id }: UserJwt,
+    @Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId,
   ) {
-    const headers_id = (<UserJwt>new JwtDecodePipe().transform(headers)).id;
-
-    if (id.toString() === headers_id) {
+    if (_id.toString() === id) {
       throw new BadRequestException('You cannot update your own role');
     }
 
-    await this.usersService.updateUserRoleToUser(id);
+    await this.usersService.updateUserRoleToUser(_id);
   }
 
   @Delete(':id')
   @Role(UserRole.Admin)
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'id', type: String })
-  @ApiHeaders([
-    { name: 'Authorization', description: 'Bearer token', required: false },
-  ])
   @ApiNoContentResponse({ description: 'delete user' })
   async deleteUser(
-    @Headers('Authorization') headers: string,
-    @Param('id', new ParseMongoIdPipe()) id: Types.ObjectId,
+    @AuthUser() { id }: UserJwt,
+    @Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId,
   ) {
-    const headers_id = (<UserJwt>new JwtDecodePipe().transform(headers)).id;
-
-    if (id.toString() === headers_id) {
+    if (_id.toString() === id) {
       throw new BadRequestException('You cannot delete yourself');
     }
 
-    await this.usersService.deleteUser(id);
+    await this.usersService.deleteUser(_id);
   }
 }
