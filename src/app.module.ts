@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { SettingsModule } from './settings/settings.module';
 import { configuration } from './config';
 import { ChoicesModule } from './choices/choices.module';
+import { SlipsModule } from './slips/slips.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ChoicesModule } from './choices/choices.module';
     AuthModule,
     SettingsModule,
     ChoicesModule,
+    SlipsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
