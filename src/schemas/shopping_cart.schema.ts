@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiQuery } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
 @Schema({ collection: 'shopping_cart' })
@@ -22,6 +22,10 @@ export class shoppingSchema {
   @ApiProperty({ type: Number, description: 'total price' })
   @Prop()
   total_price: number;
+
+  @ApiProperty({ type: Boolean, description: 'is ordered' })
+  @Prop({ default: false })
+  is_ordered: boolean;
 }
 
 export const ShoppingCartSchema = SchemaFactory.createForClass(shoppingSchema);

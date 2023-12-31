@@ -12,6 +12,7 @@ import { SettingsModule } from './settings/settings.module';
 import { configuration } from './config';
 import { ChoicesModule } from './choices/choices.module';
 import { SlipsModule } from './slips/slips.module';
+import { ShoppingCartModule } from './shopping_cart/shopping_cart.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SlipsModule } from './slips/slips.module';
     SettingsModule,
     ChoicesModule,
     SlipsModule,
+    ShoppingCartModule,
   ],
   controllers: [AppController],
   providers: [AppService],
