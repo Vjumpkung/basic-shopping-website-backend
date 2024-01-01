@@ -7,6 +7,10 @@ export class shoppingSchema {
   @ApiProperty({ type: String, description: 'shopping cart id' })
   _id: Types.ObjectId;
 
+  @ApiProperty({ type: String, description: 'user id' })
+  @Prop()
+  user: Types.ObjectId;
+
   @ApiProperty({ type: String, description: 'Product id' })
   @Prop()
   product: Types.ObjectId;
