@@ -15,6 +15,7 @@ import {
   ApiBearerAuth,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
@@ -38,6 +39,7 @@ export class UsersController {
 
   @Get()
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @ApiOkResponse({ description: 'get users', type: userSchema, isArray: true })
   async getUsers() {
     return await this.usersService.findAll();
@@ -45,6 +47,7 @@ export class UsersController {
 
   @Post()
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'create user' })
   async createUser(@Body() userCreateDto: UserCreateDto) {
@@ -53,6 +56,7 @@ export class UsersController {
 
   @Patch(':id/admin')
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'id', type: String })
   @ApiNoContentResponse({ description: 'update user role to admin' })
@@ -69,6 +73,7 @@ export class UsersController {
 
   @Patch(':id/user')
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'id', type: String })
   @ApiNoContentResponse({ description: 'update user role to user' })
@@ -85,6 +90,7 @@ export class UsersController {
 
   @Delete(':id')
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiParam({ name: 'id', type: String })
   @ApiNoContentResponse({ description: 'delete user' })

@@ -16,6 +16,7 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
@@ -55,6 +56,7 @@ export class ProductsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @Post()
   @ApiBody({ type: ProductCreateDto })
   @ApiCreatedResponse({ type: productSchema })
@@ -65,6 +67,7 @@ export class ProductsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'update product' })
   @ApiBody({ type: ProductUpdateDto })
@@ -80,6 +83,7 @@ export class ProductsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'publish product' })
   @ApiParam({ name: 'id', type: String })
@@ -93,6 +97,7 @@ export class ProductsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'draft product' })
   @ApiParam({ name: 'id', type: String })
@@ -104,11 +109,28 @@ export class ProductsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiNoContentResponse({ description: 'delete product' })
   @ApiParam({ name: 'id', type: String })
   async deleteProduct(@Param('id', new ParseMongoIdPipe()) id: Types.ObjectId) {
     await this.productsService.deleteProduct(id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
+  @ApiNoContentResponse({ description: 'update product status' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiParam({ name: 'id', type: String })
+  @ApiQuery({ name: 'available', type: Boolean })
+  @Patch(':id')
+  async updateProductAvailable(
+    @Param('id', new ParseMongoIdPipe()) id: Types.ObjectId,
+    @Query('available') available: boolean,
+  ) {
+    await this.productsService.updateAvailable(id, available);
   }
 }

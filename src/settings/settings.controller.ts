@@ -14,6 +14,7 @@ import {
   ApiBody,
   ApiNoContentResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { settingsSchema } from 'src/schemas/settings.schema';
@@ -29,15 +30,16 @@ export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
   @ApiOkResponse({ description: 'get settings', type: settingsSchema })
-  @Get('/')
+  @Get()
   async getSettings() {
     return await this.settingsService.getSettings();
   }
 
   @UseGuards(AuthGuard)
   @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
   @ApiBearerAuth()
-  @Patch('/')
+  @Patch()
   @UseInterceptors(FileInterceptor('logo'))
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBody({

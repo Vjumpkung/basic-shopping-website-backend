@@ -37,6 +37,10 @@ export class productSchema {
   @Prop()
   price: number;
 
+  @ApiProperty({ type: Boolean, description: 'product availability' })
+  @Prop({ default: true })
+  isAvailable: boolean;
+
   @ApiProperty({ type: Date, description: 'product published date' })
   @Prop({ default: null })
   published_at: Date;

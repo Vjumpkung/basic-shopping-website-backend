@@ -52,4 +52,11 @@ export class ProductsService {
       { $set: { deleted_at: new Date() } },
     );
   }
+
+  async updateAvailable(id: Types.ObjectId, isAvailable: boolean) {
+    await this.productsModel.updateOne(
+      { _id: id },
+      { $set: { isAvailable: isAvailable } },
+    );
+  }
 }
