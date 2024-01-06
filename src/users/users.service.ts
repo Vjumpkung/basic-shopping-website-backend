@@ -45,6 +45,8 @@ export class UsersService {
   }
 
   async deleteUser(id: Types.ObjectId) {
-    await this.usersModel.updateOne({ _id: id }, { deleted_at: new Date() });
+    await this.usersModel
+      .updateOne({ _id: id }, { deleted_at: new Date() })
+      .exec();
   }
 }

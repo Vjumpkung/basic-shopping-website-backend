@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class ProductUpdateDto {
   @IsOptional()
@@ -20,7 +21,7 @@ export class ProductUpdateDto {
     isArray: true,
     required: false,
   })
-  choices: string[];
+  choices: Types.ObjectId[];
 
   @ApiProperty({
     type: String,

@@ -6,6 +6,7 @@ import { orderSchema } from 'src/schemas/orders.schema';
 import { CreateOrderDto } from './dto/order.create.dto';
 import { ShippingCreateDto } from './dto/shipping.crate.dto';
 import { ShippingsService } from 'src/shippings/shippings.service';
+import { ShoppingCartService } from 'src/shopping_cart/shopping_cart.service';
 
 @Injectable()
 export class OrdersService {
@@ -13,22 +14,40 @@ export class OrdersService {
     @InjectModel('orders')
     private readonly ordersModel: Model<orderSchema>,
     private readonly shippingService: ShippingsService,
+    private readonly shoppingCartService: ShoppingCartService,
   ) {}
 
   async getOrders() {
-    return await this.ordersModel.find({ deleted_at: null }).exec();
+    return await this.ordersModel
+      .find({ deleted_at: null })
+      .populate('shipping')
+      .exec();
   }
 
   async getOrdersByUserId(id: Types.ObjectId) {
     return await this.ordersModel.find({ user: id, deleted_at: null }).exec();
   }
 
-  async createOrder(createOrderDto: CreateOrderDto) {
-    createOrderDto.user = new Types.ObjectId(createOrderDto.user);
-    createOrderDto.shopping_cart = createOrderDto.shopping_cart.map(
-      (item) => new Types.ObjectId(item),
+  async createOrder(userId: Types.ObjectId, createOrderDto: CreateOrderDto) {
+    const copy_of_shopping_cart =
+      await this.shoppingCartService.getCartByCartIds(
+        createOrderDto.shopping_cart.map((item) => new Types.ObjectId(item)),
+      );
+
+    await this.shoppingCartService.updateIsOrdered(
+      createOrderDto.shopping_cart,
     );
-    const order = new this.ordersModel(createOrderDto);
+
+    const total_price = copy_of_shopping_cart.reduce(
+      (acc, item) => acc + item.total_price,
+      0,
+    );
+
+    const order = new this.ordersModel({
+      user: userId,
+      shopping_cart: copy_of_shopping_cart,
+      total_price: total_price,
+    });
     return await order.save();
   }
 
@@ -50,22 +69,29 @@ export class OrdersService {
   }
 
   async cancelledOrder(id: Types.ObjectId, cancelled_reason: string) {
-    await this.ordersModel.updateOne(
-      { _id: id },
-      {
-        $set: {
-          status: OrderStatus.Cancelled,
-          cancelled_at: new Date(),
-          cancelled_reason: cancelled_reason,
+    await this.ordersModel
+      .updateOne(
+        { _id: id },
+        {
+          $set: {
+            status: OrderStatus.Cancelled,
+            cancelled_at: new Date(),
+            cancelled_reason: cancelled_reason,
+          },
         },
-      },
-    );
+      )
+      .exec();
+  }
+
+  async editTracking(id: Types.ObjectId, shipping_id: Types.ObjectId) {
+    await this.ordersModel
+      .updateOne({ _id: id }, { $set: { shipping: shipping_id } })
+      .exec();
   }
 
   async deleteOrder(id: Types.ObjectId) {
-    await this.ordersModel.updateOne(
-      { _id: id },
-      { $set: { deleted_at: new Date() } },
-    );
+    await this.ordersModel
+      .updateOne({ _id: id }, { $set: { deleted_at: new Date() } })
+      .exec();
   }
 }

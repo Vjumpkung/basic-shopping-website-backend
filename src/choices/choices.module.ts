@@ -10,5 +10,6 @@ import { ChoicesSchema } from 'src/schemas/choices.schema';
   ],
   controllers: [ChoicesController],
   providers: [ChoicesService],
+  exports: [ChoicesModule, ChoicesService],
 })
 export class ChoicesModule {}

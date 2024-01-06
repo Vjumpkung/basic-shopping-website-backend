@@ -11,6 +11,10 @@ export class ShippingsService {
     private readonly shippingModel: Model<shippingSchema>,
   ) {}
 
+  async getAllShippings() {
+    return await this.shippingModel.find().exec();
+  }
+
   async createShipping(shippingCreateDto: ShippingCreateDto) {
     const shipping = new this.shippingModel(shippingCreateDto);
     return await shipping.save();

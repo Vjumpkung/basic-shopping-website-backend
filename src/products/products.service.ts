@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ProductCreateDto } from './dto/product.create.dto';
-import { ProductsGetDto } from './dto/product.get.dto';
 import { ProductUpdateDto } from './dto/product.update.dto';
 
 @Injectable()
@@ -13,50 +12,112 @@ export class ProductsService {
     private readonly productsModel: Model<productSchema>,
   ) {}
 
-  async getProducts(productsGetDto: ProductsGetDto) {
-    if (productsGetDto.status === 'all') {
-      return await this.productsModel.find({ deleted_at: null }).exec();
-    } else if (productsGetDto.status === 'publish') {
+  async getProducts(status: string) {
+    if (status === 'all') {
       return await this.productsModel
-        .find({ published_at: { $ne: null }, deleted_at: null })
+        .aggregate([
+          {
+            $match: {
+              deleted_at: null,
+            },
+          },
+          {
+            $lookup: {
+              from: 'choices',
+              localField: 'choices',
+              foreignField: '_id',
+              as: 'choices',
+            },
+          },
+        ])
+        .exec();
+    } else if (status === 'publish') {
+      return await this.productsModel
+        .aggregate([
+          {
+            $match: {
+              published_at: {
+                $ne: null,
+              },
+              deleted_at: null,
+            },
+          },
+          {
+            $lookup: {
+              from: 'choices',
+              localField: 'choices',
+              foreignField: '_id',
+              as: 'choices',
+            },
+          },
+        ])
         .exec();
     }
   }
 
   async getProductById(id: Types.ObjectId) {
-    return await this.productsModel.findOne({ _id: id, deleted_at: null });
+    const res = await this.productsModel
+      .aggregate([
+        {
+          $match: {
+            _id: id,
+            published_at: {
+              $ne: null,
+            },
+            deleted_at: null,
+          },
+        },
+        {
+          $lookup: {
+            from: 'choices',
+            localField: 'choices',
+            foreignField: '_id',
+            as: 'choices',
+          },
+        },
+      ])
+      .exec();
+    return res[0];
   }
 
   async createProduct(productCreateDto: ProductCreateDto) {
+    productCreateDto.choices = productCreateDto.choices.map((choice) => {
+      choice = new Types.ObjectId(choice);
+      return choice;
+    });
     const product = new this.productsModel(productCreateDto);
     return await product.save();
   }
 
   async updateProduct(_id: Types.ObjectId, productUpdateDto: ProductUpdateDto) {
-    await this.productsModel.updateOne(
-      { _id: _id },
-      { $set: productUpdateDto },
-    );
+    productUpdateDto.choices = productUpdateDto.choices.map((choice) => {
+      choice = new Types.ObjectId(choice);
+      return choice;
+    });
+
+    await this.productsModel
+      .updateOne({ _id: _id }, { $set: productUpdateDto })
+      .exec();
   }
 
   async changeProductStatus(id: Types.ObjectId, isPublished: boolean) {
-    await this.productsModel.updateOne(
-      { _id: id },
-      { $set: { published_at: isPublished ? new Date() : null } },
-    );
+    await this.productsModel
+      .updateOne(
+        { _id: id },
+        { $set: { published_at: isPublished ? new Date() : null } },
+      )
+      .exec();
   }
 
   async deleteProduct(id: Types.ObjectId) {
-    await this.productsModel.updateOne(
-      { _id: id },
-      { $set: { deleted_at: new Date() } },
-    );
+    await this.productsModel
+      .updateOne({ _id: id }, { $set: { deleted_at: new Date() } })
+      .exec();
   }
 
   async updateAvailable(id: Types.ObjectId, isAvailable: boolean) {
-    await this.productsModel.updateOne(
-      { _id: id },
-      { $set: { isAvailable: isAvailable } },
-    );
+    await this.productsModel
+      .updateOne({ _id: id }, { $set: { isAvailable: isAvailable } })
+      .exec();
   }
 }

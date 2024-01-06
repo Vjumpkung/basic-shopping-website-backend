@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -19,6 +20,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateOrderDto } from './dto/order.create.dto';
@@ -31,6 +33,9 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Role } from 'src/decorators/user.role.decorator';
 import { UserRole } from 'src/enums/user.role';
 import { ShippingCreateDto } from './dto/shipping.crate.dto';
+import { UserJwt } from 'src/auth/user.jwt';
+import { AuthUser } from 'src/decorators/authuser.decorator';
+import { OrdersByUserIdResponseDto } from './dto/orders.by.user.response.dto';
 
 @Controller('orders')
 @ApiTags('orders')
@@ -58,16 +63,13 @@ export class OrdersController {
   @ApiOperation({ summary: 'Require USER' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
-    description: 'Get order by id',
-    type: orderSchema,
+    description: 'Get order by user id',
+    type: OrdersByUserIdResponseDto,
     isArray: true,
   })
-  @ApiParam({ name: 'id', type: String })
-  @Get(':id')
-  async getOrdersByUserId(
-    @Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId,
-  ) {
-    return await this.ordersService.getOrdersByUserId(_id);
+  @Get('/user')
+  async getOrdersByUserId(@AuthUser() { id }: UserJwt) {
+    return await this.ordersService.getOrdersByUserId(new Types.ObjectId(id));
   }
 
   @UseGuards(AuthGuard)
@@ -78,8 +80,14 @@ export class OrdersController {
   @ApiBody({ type: CreateOrderDto })
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  async createOrder(@Body() createOrderDto: CreateOrderDto) {
-    return await this.ordersService.createOrder(createOrderDto);
+  async createOrder(
+    @Body() createOrderDto: CreateOrderDto,
+    @AuthUser() { id }: UserJwt,
+  ) {
+    return await this.ordersService.createOrder(
+      new Types.ObjectId(id),
+      createOrderDto,
+    );
   }
 
   @UseGuards(AuthGuard)
@@ -184,6 +192,24 @@ export class OrdersController {
     @Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId,
   ) {
     await this.ordersService.updateStatus(_id, OrderStatus.Refunded);
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
+  @ApiParam({ name: 'id', type: String, description: 'order id' })
+  @ApiQuery({ name: 'shipping_id', type: String, description: 'shipping id' })
+  @ApiNoContentResponse({
+    description: 'edit shipping id',
+  })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch(':id/edit')
+  async editTracking(
+    @Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId,
+    @Query('shipping_id', new ParseMongoIdPipe()) shipping_id: Types.ObjectId,
+  ) {
+    await this.ordersService.editTracking(_id, shipping_id);
   }
 
   @UseGuards(AuthGuard)

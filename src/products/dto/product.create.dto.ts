@@ -1,23 +1,34 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class ProductCreateDto {
   @IsString()
-  @ApiProperty({ type: String, description: 'Product name' })
+  @ApiProperty({ type: String, description: 'Product name', required: true })
   name: string;
 
   @IsString()
   @ApiProperty({ type: String, description: 'Product description' })
   description: string;
 
-  @ApiProperty({ type: String, description: 'Product choices', isArray: true })
-  choices: string[];
+  @ApiProperty({
+    type: String,
+    description: 'Product choices',
+    isArray: true,
+    required: false,
+  })
+  choices: Types.ObjectId[];
 
-  @ApiProperty({ type: String, description: 'Product image', isArray: true })
+  @ApiProperty({
+    type: String,
+    description: 'Product image',
+    isArray: true,
+    required: false,
+  })
   image: string[];
 
   @IsNumber()
-  @ApiProperty({ type: Number, description: 'Product price' })
+  @ApiProperty({ type: Number, description: 'Product price', required: true })
   price: number;
 
   @ApiProperty({

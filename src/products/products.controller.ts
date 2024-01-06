@@ -28,7 +28,7 @@ import { productSchema } from 'src/schemas/products.schema';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Role } from 'src/decorators/user.role.decorator';
 import { UserRole } from 'src/enums/user.role';
-import { ProductsGetDto } from './dto/product.get.dto';
+import { ProductsResponseDto } from './dto/product.response.dto';
 import { Types } from 'mongoose';
 import { ParseMongoIdPipe } from 'src/pipes/mongo.objectid.pipe';
 import { ProductUpdateDto } from './dto/product.update.dto';
@@ -39,13 +39,14 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiQuery({ name: 'status', enum: ['all', 'publish'] })
-  @ApiResponse({ type: productSchema, isArray: true })
+  @ApiResponse({ type: ProductsResponseDto, isArray: true })
   @Get()
-  async getProducts(@Query() productGetDto: ProductsGetDto) {
-    return await this.productsService.getProducts(productGetDto);
+  async getProducts(@Query('status') status: string) {
+    return await this.productsService.getProducts(status);
   }
 
   @ApiParam({ name: 'id', type: String })
+  @ApiResponse({ type: ProductsResponseDto })
   @Get(':id')
   async getProductById(
     @Param('id', new ParseMongoIdPipe()) id: Types.ObjectId,
@@ -72,7 +73,7 @@ export class ProductsController {
   @ApiNoContentResponse({ description: 'update product' })
   @ApiBody({ type: ProductUpdateDto })
   @ApiParam({ name: 'id', type: String })
-  @Patch(':id')
+  @Patch(':id/update')
   async updateProduct(
     @Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId,
     @Body() productUpdateDto: ProductUpdateDto,
