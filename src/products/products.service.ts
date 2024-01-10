@@ -81,7 +81,7 @@ export class ProductsService {
   }
 
   async createProduct(productCreateDto: ProductCreateDto) {
-    productCreateDto.choices = productCreateDto.choices.map((choice) => {
+    productCreateDto.choices = productCreateDto.choices?.map((choice) => {
       choice = new Types.ObjectId(choice);
       return choice;
     });

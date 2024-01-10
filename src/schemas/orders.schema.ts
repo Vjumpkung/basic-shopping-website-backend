@@ -40,6 +40,13 @@ export class orderSchema {
 
   @ApiProperty({
     type: Date,
+    description: 'order created date',
+  })
+  @Prop({ default: new Date(), auto: true })
+  created_at: Date;
+
+  @ApiProperty({
+    type: Date,
     description: 'order cancelled date',
     nullable: true,
   })

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class ProductCreateDto {
@@ -8,7 +8,11 @@ export class ProductCreateDto {
   name: string;
 
   @IsString()
-  @ApiProperty({ type: String, description: 'Product description' })
+  @ApiProperty({
+    type: String,
+    description: 'Product description',
+    required: false,
+  })
   description: string;
 
   @ApiProperty({
@@ -27,8 +31,9 @@ export class ProductCreateDto {
   })
   image: string[];
 
+  @IsOptional()
   @IsNumber()
-  @ApiProperty({ type: Number, description: 'Product price', required: true })
+  @ApiProperty({ type: Number, description: 'Product price', required: false })
   price: number;
 
   @ApiProperty({

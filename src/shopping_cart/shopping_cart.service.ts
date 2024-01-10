@@ -71,13 +71,12 @@ export class ShoppingCartService {
               $multiply: [
                 {
                   $add: [
-                    '$product.price',
                     {
                       $cond: {
                         if: {
                           $eq: ['$choice', null],
                         },
-                        then: 0,
+                        then: '$product.price',
                         else: '$choice.price',
                       },
                     },
@@ -151,13 +150,12 @@ export class ShoppingCartService {
               $multiply: [
                 {
                   $add: [
-                    '$product.price',
                     {
                       $cond: {
                         if: {
                           $eq: ['$choice', null],
                         },
-                        then: 0,
+                        then: '$product.price',
                         else: '$choice.price',
                       },
                     },

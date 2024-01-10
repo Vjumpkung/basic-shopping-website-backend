@@ -21,11 +21,16 @@ export class OrdersService {
     return await this.ordersModel
       .find({ deleted_at: null })
       .populate('shipping')
+      .sort({ created_at: -1 })
       .exec();
   }
 
   async getOrdersByUserId(id: Types.ObjectId) {
-    return await this.ordersModel.find({ user: id, deleted_at: null }).exec();
+    return await this.ordersModel
+      .find({ user: id, deleted_at: null })
+      .populate('shipping')
+      .sort({ created_at: -1 })
+      .exec();
   }
 
   async createOrder(userId: Types.ObjectId, createOrderDto: CreateOrderDto) {
@@ -47,6 +52,7 @@ export class OrdersService {
       user: userId,
       shopping_cart: copy_of_shopping_cart,
       total_price: total_price,
+      created_at: new Date(),
     });
     return await order.save();
   }

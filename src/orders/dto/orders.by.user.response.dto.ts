@@ -24,8 +24,18 @@ export class OrdersByUserIdResponseDto {
   @ApiProperty({ type: String, enum: OrderStatus, description: 'Order status' })
   status: OrderStatus;
 
-  @ApiProperty({ type: String, description: 'shipping id', nullable: true })
+  @ApiProperty({
+    type: shippingSchema,
+    description: 'shipping id',
+    nullable: true,
+  })
   shipping: shippingSchema;
+
+  @ApiProperty({
+    type: Date,
+    description: 'order created date',
+  })
+  created_at: Date;
 
   @ApiProperty({
     type: Date,
