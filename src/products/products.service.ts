@@ -89,7 +89,7 @@ export class ProductsService {
   }
 
   async updateProduct(_id: Types.ObjectId, productUpdateDto: ProductUpdateDto) {
-    productUpdateDto.choices = productUpdateDto.choices.map((choice) => {
+    productUpdateDto.choices = productUpdateDto.choices?.map((choice) => {
       choice = new Types.ObjectId(choice);
       return choice;
     });
