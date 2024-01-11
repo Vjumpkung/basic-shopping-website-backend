@@ -29,6 +29,11 @@ export class ProductsService {
               as: 'choices',
             },
           },
+          {
+            $sort: {
+              published_at: -1,
+            },
+          },
         ])
         .exec();
     } else if (status === 'publish') {
@@ -50,6 +55,11 @@ export class ProductsService {
               as: 'choices',
             },
           },
+          {
+            $sort: {
+              published_at: -1,
+            },
+          },
         ])
         .exec();
     }
@@ -57,27 +67,16 @@ export class ProductsService {
 
   async getProductById(id: Types.ObjectId) {
     const res = await this.productsModel
-      .aggregate([
-        {
-          $match: {
-            _id: id,
-            published_at: {
-              $ne: null,
-            },
-            deleted_at: null,
-          },
+      .findOne({
+        _id: id,
+        published_at: {
+          $ne: null,
         },
-        {
-          $lookup: {
-            from: 'choices',
-            localField: 'choices',
-            foreignField: '_id',
-            as: 'choices',
-          },
-        },
-      ])
+        deleted_at: null,
+      })
+      .populate('choices')
       .exec();
-    return res[0];
+    return res;
   }
 
   async createProduct(productCreateDto: ProductCreateDto) {
