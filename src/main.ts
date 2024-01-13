@@ -15,8 +15,8 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('NestJS API')
-    .setDescription('API description')
+    .setTitle('Basic Shopping Website API')
+    .setDescription('just a basic shopping website api  ')
     .setVersion('0.0.1')
     .addBearerAuth()
     .build();

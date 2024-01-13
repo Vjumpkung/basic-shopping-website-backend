@@ -61,6 +61,7 @@ export class ShoppingCartService {
               $ifNull: ['$choice', null],
             },
             amount: true,
+            additional_info: true,
             is_ordered: true,
             deleted_at: true,
           },
@@ -136,6 +137,7 @@ export class ShoppingCartService {
             _id: true,
             user: true,
             product: true,
+            additional_info: true,
             choice: {
               $ifNull: ['$choice', null],
             },
@@ -176,11 +178,14 @@ export class ShoppingCartService {
       ? new Types.ObjectId(addToCartDto.choice)
       : null;
 
-    const cart = await this.shoppingCartModel.create({
+    const cart = new this.shoppingCartModel({
       user: userId,
       product: productId,
       choice: choiceId,
       amount: addToCartDto.amount,
+      additional_info: addToCartDto.additional_info
+        ? addToCartDto.additional_info
+        : null,
     });
     await cart.save();
   }

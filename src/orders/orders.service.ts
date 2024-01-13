@@ -20,7 +20,7 @@ export class OrdersService {
   async getOrders() {
     return await this.ordersModel
       .find({ deleted_at: null })
-      .populate('shipping')
+      .populate('shipping address')
       .sort({ created_at: -1 })
       .exec();
   }
@@ -28,7 +28,7 @@ export class OrdersService {
   async getOrdersByUserId(id: Types.ObjectId) {
     return await this.ordersModel
       .find({ user: id, deleted_at: null })
-      .populate('shipping')
+      .populate('shipping address')
       .sort({ created_at: -1 })
       .exec();
   }
@@ -53,6 +53,10 @@ export class OrdersService {
       shopping_cart: copy_of_shopping_cart,
       total_price: total_price,
       created_at: new Date(),
+      additional_info: createOrderDto.additional_info
+        ? createOrderDto.additional_info
+        : null,
+      address: new Types.ObjectId(createOrderDto.address),
     });
     return await order.save();
   }

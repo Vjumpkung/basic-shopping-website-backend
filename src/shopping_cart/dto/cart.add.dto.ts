@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNumber, IsOptional } from 'class-validator';
+import { IsMongoId, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Types } from 'mongoose';
 
 export class AddToCartDto {
@@ -19,4 +19,13 @@ export class AddToCartDto {
   @IsNumber()
   @ApiProperty({ type: Number, description: 'Amount of product' })
   amount: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    type: String,
+    description: 'additional info',
+    required: false,
+  })
+  additional_info: string;
 }

@@ -14,6 +14,7 @@ import { ChoicesModule } from './choices/choices.module';
 import { SlipsModule } from './slips/slips.module';
 import { ShoppingCartModule } from './shopping_cart/shopping_cart.module';
 import { ShippingsModule } from './shippings/shippings.module';
+import { AddressesModule } from './addresses/addresses.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ShippingsModule } from './shippings/shippings.module';
     SlipsModule,
     ShoppingCartModule,
     ShippingsModule,
+    AddressesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

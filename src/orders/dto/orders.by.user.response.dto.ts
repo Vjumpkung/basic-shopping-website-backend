@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { OrderStatus } from 'src/enums/order.status';
+import { addressSchema } from 'src/schemas/address.schema';
 import { shippingSchema } from 'src/schemas/shipping.schema';
 import { CartResponseDto } from 'src/shopping_cart/dto/cart.response.dto';
 
@@ -10,6 +11,12 @@ export class OrdersByUserIdResponseDto {
 
   @ApiProperty({ type: String, description: 'user id' })
   user: Types.ObjectId;
+
+  @ApiProperty({ type: addressSchema, description: 'address' })
+  address: addressSchema;
+
+  @ApiProperty({ type: String, description: 'additional info' })
+  additional_info: string;
 
   @ApiProperty({
     type: CartResponseDto,

@@ -4,6 +4,7 @@ import { Types } from 'mongoose';
 import { OrderStatus } from 'src/enums/order.status';
 import { CartResponseDto } from 'src/shopping_cart/dto/cart.response.dto';
 import { shippingSchema } from './shipping.schema';
+import { addressSchema } from './address.schema';
 
 @Schema({ collection: 'orders' })
 export class orderSchema {
@@ -13,6 +14,10 @@ export class orderSchema {
   @ApiProperty({ type: String, description: 'user id' })
   @Prop()
   user: Types.ObjectId;
+
+  @ApiProperty({ type: addressSchema, description: 'address id' })
+  @Prop({ ref: 'addresses', type: Types.ObjectId })
+  address: addressSchema | Types.ObjectId;
 
   @ApiProperty({
     type: CartResponseDto,
@@ -29,6 +34,10 @@ export class orderSchema {
   @ApiProperty({ type: String, enum: OrderStatus, description: 'Order status' })
   @Prop({ default: OrderStatus.MustBePaid })
   status: OrderStatus;
+
+  @ApiProperty({ type: String, description: 'additional info' })
+  @Prop({ type: String, required: false, default: '' })
+  additional_info: string;
 
   @ApiProperty({
     type: shippingSchema,

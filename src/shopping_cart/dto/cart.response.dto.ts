@@ -10,6 +10,9 @@ export class CartResponseDto {
   @ApiProperty({ type: String, description: 'user id' })
   user: Types.ObjectId;
 
+  @ApiProperty({ type: String, description: 'additional info' })
+  additional_info: string;
+
   @ApiProperty({ type: productSchema, description: 'Product id' })
   product: productSchema;
 

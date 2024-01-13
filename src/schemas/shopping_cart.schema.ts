@@ -26,6 +26,10 @@ export class shoppingSchema {
   })
   choice: choiceSchema | Types.ObjectId;
 
+  @ApiProperty({ type: String, description: 'additional info' })
+  @Prop({ type: String, required: false, default: null })
+  additional_info: string;
+
   @ApiProperty({ type: Number, description: 'amount' })
   @Prop()
   amount: number;
