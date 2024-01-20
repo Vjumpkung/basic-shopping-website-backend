@@ -69,9 +69,6 @@ export class ProductsService {
     const res = await this.productsModel
       .findOne({
         _id: id,
-        published_at: {
-          $ne: null,
-        },
         deleted_at: null,
       })
       .populate('choices')
