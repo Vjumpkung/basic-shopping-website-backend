@@ -32,6 +32,7 @@ import { ProductsResponseDto } from './dto/product.response.dto';
 import { Types } from 'mongoose';
 import { ParseMongoIdPipe } from 'src/pipes/mongo.objectid.pipe';
 import { ProductUpdateDto } from './dto/product.update.dto';
+import { ProductsAllResponseDto } from './dto/product.all.response.dto';
 
 @Controller('products')
 @ApiTags('products')
@@ -39,7 +40,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @ApiQuery({ name: 'status', enum: ['all', 'publish'] })
-  @ApiResponse({ type: ProductsResponseDto, isArray: true })
+  @ApiResponse({ type: ProductsAllResponseDto, isArray: true })
   @Get()
   async getProducts(@Query('status') status: string) {
     return await this.productsService.getProducts(status);

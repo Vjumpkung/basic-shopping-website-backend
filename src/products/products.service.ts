@@ -30,6 +30,11 @@ export class ProductsService {
             },
           },
           {
+            $project: {
+              description: 0,
+            },
+          },
+          {
             $sort: {
               published_at: -1,
             },
@@ -53,6 +58,11 @@ export class ProductsService {
               localField: 'choices',
               foreignField: '_id',
               as: 'choices',
+            },
+          },
+          {
+            $project: {
+              description: 0,
             },
           },
           {
