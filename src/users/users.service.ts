@@ -5,6 +5,7 @@ import { userSchema } from 'src/schemas/users.schema';
 import { UserCreateDto } from './dto/user.create.dto';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from 'src/enums/user.role';
+import { UpdateInfoDto } from './dto/user.update.info.dto';
 
 @Injectable()
 export class UsersService {
@@ -30,6 +31,39 @@ export class UsersService {
       role: userCreateDto.role,
     });
     await user.save();
+  }
+
+  async updateUserInfo(userId: Types.ObjectId, updateInfo: UpdateInfoDto) {
+    const user = await this.usersModel.findOne({ _id: userId }).lean().exec();
+    if (await bcrypt.compare(updateInfo.oldPassword, user.password)) {
+      if (updateInfo.newUsername) {
+        const isExist = await this.usersModel
+          .findOne({ username: updateInfo.newUsername })
+          .exec();
+        if (isExist) {
+          throw new BadRequestException({
+            message: 'ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว',
+          });
+        }
+        user.username = updateInfo.newUsername;
+      }
+      if (updateInfo.newPassword) {
+        user.password = await bcrypt.hash(updateInfo.newPassword, 10);
+      }
+      await this.usersModel
+        .updateOne(
+          { _id: userId },
+          {
+            username: user.username,
+            password: user.password,
+          },
+        )
+        .exec();
+    } else {
+      throw new BadRequestException({
+        message: 'รหัสผ่านไม่ถูกต้อง',
+      });
+    }
   }
 
   async updateUserRoleToAdmin(id: Types.ObjectId) {

@@ -12,7 +12,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
   ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
@@ -29,6 +31,8 @@ import { ParseMongoIdPipe } from 'src/pipes/mongo.objectid.pipe';
 import { Types } from 'mongoose';
 import { UserJwt } from 'src/auth/user.jwt';
 import { AuthUser } from 'src/decorators/authuser.decorator';
+import { UpdateInfoDto } from './dto/user.update.info.dto';
+import { ErrorDto } from './dto/error.dto';
 
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
@@ -52,6 +56,23 @@ export class UsersController {
   @ApiNoContentResponse({ description: 'create user' })
   async createUser(@Body() userCreateDto: UserCreateDto) {
     await this.usersService.createUser(userCreateDto);
+  }
+
+  @Patch(':id')
+  @Role(UserRole.User)
+  @ApiOperation({ summary: 'Require USER' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: UpdateInfoDto })
+  @ApiNoContentResponse({ description: 'update user info' })
+  @ApiBadRequestResponse({
+    type: ErrorDto,
+  })
+  async updateUserInfo(
+    @Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId,
+    @Body() updateInfo: UpdateInfoDto,
+  ) {
+    await this.usersService.updateUserInfo(_id, updateInfo);
   }
 
   @Patch(':id/admin')

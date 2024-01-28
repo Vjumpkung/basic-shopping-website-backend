@@ -5,7 +5,7 @@ import { UserRole } from 'src/enums/user.role';
 
 export class ProfileResponseDto {
   @ApiProperty({ type: String, description: 'id' })
-  _id: Types.ObjectId;
+  id: Types.ObjectId;
 
   @ApiProperty({ type: String, description: 'username' })
   username: string;
