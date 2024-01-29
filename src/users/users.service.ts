@@ -20,7 +20,9 @@ export class UsersService {
 
   async createUser(userCreateDto: UserCreateDto) {
     if (
-      await this.usersModel.findOne({ username: userCreateDto.username }).exec()
+      await this.usersModel
+        .findOne({ username: userCreateDto.username, deleted_at: null })
+        .exec()
     ) {
       throw new BadRequestException('Username already used');
     }
@@ -68,19 +70,19 @@ export class UsersService {
 
   async updateUserRoleToAdmin(id: Types.ObjectId) {
     await this.usersModel
-      .updateOne({ _id: id }, { role: UserRole.Admin })
+      .updateOne({ _id: id, deleted_at: null }, { role: UserRole.Admin })
       .exec();
   }
 
   async updateUserRoleToUser(id: Types.ObjectId) {
     await this.usersModel
-      .updateOne({ _id: id }, { role: UserRole.User })
+      .updateOne({ _id: id, deleted_at: null }, { role: UserRole.User })
       .exec();
   }
 
   async deleteUser(id: Types.ObjectId) {
     await this.usersModel
-      .updateOne({ _id: id }, { deleted_at: new Date() })
+      .updateOne({ _id: id, deleted_at: null }, { deleted_at: new Date() })
       .exec();
   }
 }

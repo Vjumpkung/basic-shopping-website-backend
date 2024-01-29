@@ -23,7 +23,9 @@ export class AuthService {
 
   async resgister(registerDto: RegisterDto): Promise<RegisterResponseDto> {
     if (
-      await this.usersModel.findOne({ username: registerDto.username }).exec()
+      await this.usersModel
+        .findOne({ username: registerDto.username, deleted_at: null })
+        .exec()
     ) {
       throw new BadRequestException('Username already used');
     }
