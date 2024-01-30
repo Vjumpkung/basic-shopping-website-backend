@@ -34,9 +34,17 @@ export class ProductsResponseDto {
   @ApiProperty({ type: Boolean, description: 'product availability' })
   isAvailable: boolean;
 
-  @ApiProperty({ type: Date, description: 'product published date' })
+  @ApiProperty({
+    type: Date,
+    description: 'product published date',
+    nullable: true,
+  })
   published_at: Date;
 
-  @ApiProperty({ type: Date, description: 'product deleted date' })
+  @ApiProperty({
+    type: Date,
+    description: 'product deleted date',
+    nullable: true,
+  })
   deleted_at: Date;
 }
