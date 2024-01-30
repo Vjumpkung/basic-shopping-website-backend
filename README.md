@@ -16,7 +16,7 @@ To run backend in local, following these steps.
 git clone https://github.com/Vjumpkung/basic-shopping-website-backend.git
 ```
 
-2.) set up .env
+2.) set up .env and install dependencies
 - first rename .env.example to .env 
   
 ```env
@@ -35,6 +35,11 @@ Fill out these 4 variables.
 `SECRET` is any kind of string for jwt-signing check maybe you can use Symmetric key.
 
 `PORT` is application running port (default `3000`)
+
+- second, install dependency.
+```
+npm install
+```
 
 3.) Running the app
 
