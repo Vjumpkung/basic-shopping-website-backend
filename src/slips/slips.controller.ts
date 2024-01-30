@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -12,8 +14,10 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { slipSchema } from 'src/schemas/slips.schema';
@@ -24,6 +28,7 @@ import { Types } from 'mongoose';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UserRole } from 'src/enums/user.role';
 import { Role } from 'src/decorators/user.role.decorator';
+import { ParseMongoIdPipe } from 'src/pipes/mongo.objectid.pipe';
 
 @ApiTags('slips')
 @Controller('slips')
@@ -47,7 +52,7 @@ export class SlipsController {
   @Role(UserRole.User)
   @ApiOperation({ summary: 'Require USER' })
   @HttpCode(HttpStatus.OK)
-  @Get(':id')
+  @Get('/user')
   async getSlipById(@AuthUser() { id }: UserJwt) {
     return await this.slipsService.getSlipById(new Types.ObjectId(id));
   }
@@ -68,5 +73,16 @@ export class SlipsController {
       new Types.ObjectId(id),
       createSlipDto,
     );
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Require ADMIN' })
+  @ApiBearerAuth()
+  @Role(UserRole.Admin)
+  @ApiNoContentResponse({ description: 'delete slip' })
+  @ApiParam({ type: String, name: 'id' })
+  @Delete(':id')
+  deleteSlip(@Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId) {
+    return this.slipsService.deleteSlip(_id);
   }
 }

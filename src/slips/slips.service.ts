@@ -19,6 +19,12 @@ export class SlipsService {
     return await this.slipModel.find({ user: id }).exec();
   }
 
+  deleteSlip(id: Types.ObjectId) {
+    return this.slipModel
+      .updateOne({ _id: id }, { $set: { deleted_at: new Date() } })
+      .exec();
+  }
+
   async createSlip(userId: Types.ObjectId, createSlipDto: CreateSlipDto) {
     createSlipDto.orders = createSlipDto.orders.map(
       (order) => new Types.ObjectId(order),

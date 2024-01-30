@@ -14,11 +14,11 @@ import { shippingSchema } from 'src/schemas/shipping.schema';
 
 @ApiTags('shippings')
 @Controller('shippings')
+@UseGuards(AuthGuard)
+@ApiBearerAuth()
 export class ShippingsController {
   constructor(private readonly shippingsService: ShippingsService) {}
 
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth()
   @Role(UserRole.Admin)
   @ApiOkResponse({ type: shippingSchema, isArray: true })
   @HttpCode(HttpStatus.OK)

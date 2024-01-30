@@ -26,6 +26,10 @@ export class slipSchema {
   @ApiProperty({ type: Date, description: 'transfer date' })
   @Prop()
   transfer_date: Date;
+
+  @ApiProperty({ type: Date, description: 'deleted at' })
+  @Prop()
+  deleted_at: Date;
 }
 
 export const SlipsSchema = SchemaFactory.createForClass(slipSchema);
