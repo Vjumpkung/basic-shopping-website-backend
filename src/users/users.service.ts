@@ -15,7 +15,9 @@ export class UsersService {
   ) {}
 
   async findAll(): Promise<userSchema[]> {
-    return await this.usersModel.find({ deleted_at: null }).exec();
+    return await this.usersModel
+      .find({ deleted_at: null }, { password: 0 })
+      .exec();
   }
 
   async createUser(userCreateDto: UserCreateDto) {

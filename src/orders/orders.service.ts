@@ -7,6 +7,7 @@ import { CreateOrderDto } from './dto/order.create.dto';
 import { ShippingCreateDto } from './dto/shipping.crate.dto';
 import { ShippingsService } from 'src/shippings/shippings.service';
 import { ShoppingCartService } from 'src/shopping_cart/shopping_cart.service';
+import { AddressesService } from 'src/addresses/addresses.service';
 
 @Injectable()
 export class OrdersService {
@@ -15,21 +16,29 @@ export class OrdersService {
     private readonly ordersModel: Model<orderSchema>,
     private readonly shippingService: ShippingsService,
     private readonly shoppingCartService: ShoppingCartService,
+    private readonly addressesService: AddressesService,
   ) {}
 
   async getOrders() {
     return await this.ordersModel
       .find({ deleted_at: null })
-      .populate('shipping address')
+      .populate('user shipping', '-password')
       .sort({ created_at: -1 })
       .exec();
   }
 
-  async getOrdersByUserId(id: Types.ObjectId) {
-    return await this.ordersModel
+  getOrdersByUserId(id: Types.ObjectId) {
+    return this.ordersModel
       .find({ user: id, deleted_at: null })
-      .populate('shipping address')
+      .populate('shipping')
       .sort({ created_at: -1 })
+      .exec();
+  }
+
+  async getOrderById(id: Types.ObjectId) {
+    return await this.ordersModel
+      .findById(id)
+      .populate('user shipping', '-password')
       .exec();
   }
 
@@ -48,6 +57,10 @@ export class OrdersService {
       0,
     );
 
+    const address = await this.addressesService.getAddressById(
+      new Types.ObjectId(createOrderDto.address),
+    );
+
     const order = new this.ordersModel({
       user: userId,
       shopping_cart: copy_of_shopping_cart,
@@ -56,7 +69,7 @@ export class OrdersService {
       additional_info: createOrderDto.additional_info
         ? createOrderDto.additional_info
         : null,
-      address: new Types.ObjectId(createOrderDto.address),
+      address: address,
     });
     return await order.save();
   }
@@ -69,7 +82,7 @@ export class OrdersService {
     await this.ordersModel
       .updateOne({ _id: id }, { $set: { status: status } })
       .exec();
-    if ((status = OrderStatus.MustBeReceived)) {
+    if (status === OrderStatus.MustBeReceived) {
       const shipping_id = (await this.shippingService.createShipping(shipping))
         ._id;
       await this.ordersModel

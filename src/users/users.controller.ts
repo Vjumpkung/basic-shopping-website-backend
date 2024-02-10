@@ -21,18 +21,18 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { Role } from 'src/decorators/user.role.decorator';
-import { UserRole } from 'src/enums/user.role';
-import { UsersService } from './users.service';
-import { userSchema } from 'src/schemas/users.schema';
-import { UserCreateDto } from './dto/user.create.dto';
-import { ParseMongoIdPipe } from 'src/pipes/mongo.objectid.pipe';
 import { Types } from 'mongoose';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { UserJwt } from 'src/auth/user.jwt';
 import { AuthUser } from 'src/decorators/authuser.decorator';
-import { UpdateInfoDto } from './dto/user.update.info.dto';
+import { Role } from 'src/decorators/user.role.decorator';
+import { UserRole } from 'src/enums/user.role';
+import { ParseMongoIdPipe } from 'src/pipes/mongo.objectid.pipe';
 import { ErrorDto } from './dto/error.dto';
+import { UserCreateDto } from './dto/user.create.dto';
+import { UserResponseDto } from './dto/user.response.dto';
+import { UpdateInfoDto } from './dto/user.update.info.dto';
+import { UsersService } from './users.service';
 
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
@@ -44,7 +44,11 @@ export class UsersController {
   @Get()
   @Role(UserRole.Admin)
   @ApiOperation({ summary: 'Require ADMIN' })
-  @ApiOkResponse({ description: 'get users', type: userSchema, isArray: true })
+  @ApiOkResponse({
+    description: 'get users',
+    type: UserResponseDto,
+    isArray: true,
+  })
   async getUsers() {
     return await this.usersService.findAll();
   }

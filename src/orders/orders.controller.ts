@@ -36,6 +36,8 @@ import { ShippingCreateDto } from './dto/shipping.crate.dto';
 import { UserJwt } from 'src/auth/user.jwt';
 import { AuthUser } from 'src/decorators/authuser.decorator';
 import { OrdersByUserIdResponseDto } from './dto/orders.by.user.response.dto';
+import { OrdersAllResponseDto } from './dto/orders.all.response.dto';
+import { OrderResponseDto } from './dto/order.by.id.dto';
 
 @Controller('orders')
 @ApiTags('orders')
@@ -49,12 +51,27 @@ export class OrdersController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     description: 'Get all orders',
-    type: orderSchema,
+    type: OrdersAllResponseDto,
     isArray: true,
   })
   @Get()
   async getOrders() {
     return await this.ordersService.getOrders();
+  }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @Role(UserRole.Admin)
+  @ApiOperation({ summary: 'Require ADMIN' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    description: 'Get order by id',
+    type: OrderResponseDto,
+  })
+  @ApiParam({ name: 'id', type: String })
+  @Get(':id')
+  async getOrderById(@Param('id', new ParseMongoIdPipe()) _id: Types.ObjectId) {
+    return await this.ordersService.getOrderById(_id);
   }
 
   @UseGuards(AuthGuard)
@@ -67,9 +84,9 @@ export class OrdersController {
     type: OrdersByUserIdResponseDto,
     isArray: true,
   })
-  @Get('/user')
-  async getOrdersByUserId(@AuthUser() { id }: UserJwt) {
-    return await this.ordersService.getOrdersByUserId(new Types.ObjectId(id));
+  @Get('/user/id')
+  getOrdersByUserId(@AuthUser() { id: userId }: UserJwt) {
+    return this.ordersService.getOrdersByUserId(new Types.ObjectId(userId));
   }
 
   @UseGuards(AuthGuard)

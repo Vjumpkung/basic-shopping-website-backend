@@ -31,10 +31,30 @@ export class ShoppingCartService {
           },
         },
         {
+          $match: {
+            'product.deleted_at': null,
+          },
+        },
+        {
           $unwind: {
             path: '$product',
             includeArrayIndex: '0',
             preserveNullAndEmptyArrays: false,
+          },
+        },
+        {
+          $match: {
+            $expr: {
+              $cond: [
+                {
+                  $in: ['$choice', '$product.choices'],
+                },
+                'choice',
+                {
+                  $eq: ['$choice', null],
+                },
+              ],
+            },
           },
         },
         {
@@ -53,17 +73,16 @@ export class ShoppingCartService {
           },
         },
         {
-          $project: {
-            _id: true,
-            user: true,
-            product: true,
+          $addFields: {
             choice: {
-              $ifNull: ['$choice', null],
+              $cond: [
+                {
+                  $in: ['$choice._id', '$product.choices'],
+                },
+                '$choice',
+                null,
+              ],
             },
-            amount: true,
-            additional_info: true,
-            is_ordered: true,
-            deleted_at: true,
           },
         },
         {
@@ -71,16 +90,12 @@ export class ShoppingCartService {
             total_price: {
               $multiply: [
                 {
-                  $add: [
+                  $cond: [
                     {
-                      $cond: {
-                        if: {
-                          $eq: ['$choice', null],
-                        },
-                        then: '$product.price',
-                        else: '$choice.price',
-                      },
+                      $eq: ['$choice', null],
                     },
+                    '$product.price',
+                    '$choice.price',
                   ],
                 },
                 '$amount',
@@ -111,10 +126,30 @@ export class ShoppingCartService {
           },
         },
         {
+          $match: {
+            'product.deleted_at': null,
+          },
+        },
+        {
           $unwind: {
             path: '$product',
             includeArrayIndex: '0',
             preserveNullAndEmptyArrays: false,
+          },
+        },
+        {
+          $match: {
+            $expr: {
+              $cond: [
+                {
+                  $in: ['$choice', '$product.choices'],
+                },
+                'choice',
+                {
+                  $eq: ['$choice', null],
+                },
+              ],
+            },
           },
         },
         {
@@ -133,17 +168,16 @@ export class ShoppingCartService {
           },
         },
         {
-          $project: {
-            _id: true,
-            user: true,
-            product: true,
-            additional_info: true,
+          $addFields: {
             choice: {
-              $ifNull: ['$choice', null],
+              $cond: [
+                {
+                  $in: ['$choice._id', '$product.choices'],
+                },
+                '$choice',
+                null,
+              ],
             },
-            amount: true,
-            is_ordered: true,
-            deleted_at: true,
           },
         },
         {
@@ -151,16 +185,12 @@ export class ShoppingCartService {
             total_price: {
               $multiply: [
                 {
-                  $add: [
+                  $cond: [
                     {
-                      $cond: {
-                        if: {
-                          $eq: ['$choice', null],
-                        },
-                        then: '$product.price',
-                        else: '$choice.price',
-                      },
+                      $eq: ['$choice', null],
                     },
+                    '$product.price',
+                    '$choice.price',
                   ],
                 },
                 '$amount',
